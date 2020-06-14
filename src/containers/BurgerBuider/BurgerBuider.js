@@ -26,7 +26,7 @@ class BurgerBuider extends React.Component {
   };
   componentDidMount() {
     axios
-      .get("https://react-my-burger-12fe5.firebaseio.com/ingridiants.json ")
+      .get("/ingridiants.json ")
       .then((response) => {
         this.setState({
           Ingredians: response.data,
@@ -99,31 +99,22 @@ class BurgerBuider extends React.Component {
     });
   };
   purchasContinueHandeler = () => {
-    this.setState({ loading: true });
+    const queryParames = [];
+    for (let i in this.state.Ingredians) {
+      queryParames.push(
+        encodeURIComponent(i) +
+          "=" +
+          encodeURIComponent(this.state.Ingredians[i])
+      );
+    }
+    queryParames.push("price=" + this.state.totalPrice);
+    const queryString = queryParames.join("&");
+    console.log("queryString", queryString);
 
-    const order = {
-      ingrediants: this.state.Ingredians,
-      price: this.state.totalPrice,
-      customer: {
-        name: "arie hozias",
-        address: {
-          street: "teststreet 1",
-          zipCode: "34335",
-          country: "israel",
-        },
-        email: "test@test.com",
-      },
-      deliveryMethod: "fastest",
-    };
-    axios
-      .post("/order.json", order)
-      .then((response) => {
-        this.setState({ loading: false, purchasing: false });
-      })
-      .catch((error) => {
-        this.setState({ loading: false, purchasing: false });
-        console.log(error);
-      });
+    this.props.history.push({
+      pathname: "/checkout",
+      search: "?" + queryString,
+    });
   };
   render() {
     const disableInfo = {
