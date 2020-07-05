@@ -1,13 +1,11 @@
-import * as actionTypes from "../actions/action";
+import * as actionTypes from "../actions/actionTypes";
+import { updateObject } from "../utility";
 
 const initState = {
-  ingredians: {
-    salad: 0,
-    cheese: 0,
-    meat: 0,
-    bacon: 0,
-  },
+  ingredians: null,
   totalPrice: 4,
+  error: false,
+  building: false,
 };
 
 const INGREDIENT_PRICES = {
@@ -18,7 +16,6 @@ const INGREDIENT_PRICES = {
 };
 
 const reducer = (state = initState, action) => {
-  console.log("{im here}", state.totalPrice);
   switch (action.type) {
     case actionTypes.ADD_INGREDIENT:
       return {
@@ -28,6 +25,7 @@ const reducer = (state = initState, action) => {
           [action.ingrediantName]: state.ingredians[action.ingrediantName] + 1,
         },
         totalPrice: state.totalPrice + INGREDIENT_PRICES[action.ingrediantName],
+        building: true,
       };
     case actionTypes.REMOVE_INGREDIENT:
       return {
@@ -38,10 +36,28 @@ const reducer = (state = initState, action) => {
         },
         totalPrice: state.totalPrice - INGREDIENT_PRICES[action.ingrediantName],
       };
+    case actionTypes.SET_INGREDIENTS:
+      return {
+        ...state,
+        //ingredians: action.ingredients,
+        ingredians: {
+          salad: action.ingredients.salad,
+          bacon: action.ingredients.bacon,
+          cheese: action.ingredients.cheese,
+          meat: action.ingredients.meat,
+        },
+        totalPrice: initState.totalPrice,
+        error: false,
+        building: false,
+      };
+    case actionTypes.GET_INGREDIENTS_FAIL:
+      return {
+        ...state,
+        error: true,
+      };
     default:
       return state;
   }
-  return state;
 };
 
 export default reducer;

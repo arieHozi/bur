@@ -18,7 +18,7 @@ const sidedrawer = (props) => {
         </div>
 
         <nav>
-          <NavigationItems />
+          <NavigationItems isAuth={props.isAuth} />
         </nav>
       </div>
     </>

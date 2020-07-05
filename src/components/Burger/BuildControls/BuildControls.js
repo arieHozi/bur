@@ -15,8 +15,6 @@ const buildControls = (props) => (
       Current Price :<strong>{props.totalSum.toFixed(2)}</strong>
     </p>
     {controls.map((control) => {
-      console.log("[props]", props);
-
       return (
         <BuildControl
           key={control.label}
@@ -27,12 +25,13 @@ const buildControls = (props) => (
         />
       );
     })}
+
     <button
       className={classes.OrderButton}
       disabled={!props.purchaseable}
       onClick={props.showOrder}
     >
-      ORDER NOW
+      {props.isAuth ? "ORDER NOW" : "Signup to continue"}
     </button>
   </div>
 );

@@ -5,6 +5,8 @@ import classes from "./ContactData.module.css";
 import axios from "../../../axios-order";
 import Spinner from "../../../components/UI/Spinner/Spinner";
 import Input from "../../../components/UI/Input/Input";
+import withErrorHandling from "../../../hoc/withErrorHandling";
+import * as action from "../../../store/actions/index";
 
 class ContactData extends React.Component {
   state = {
@@ -101,7 +103,6 @@ class ContactData extends React.Component {
       },
     },
     formIsValid: false,
-    loading: false,
   };
 
   orderHendler = (event) => {
@@ -117,17 +118,9 @@ class ContactData extends React.Component {
       ingrediants: this.props.ings,
       price: this.props.totSum,
       orderData: formData,
+      userId: this.props.userId,
     };
-    axios
-      .post("/orders.json", order)
-      .then((response) => {
-        this.setState({ loading: false });
-        this.props.history.push("/");
-      })
-      .catch((error) => {
-        this.setState({ loading: false });
-        console.log(error);
-      });
+    this.props.onOrderBurger(order, this.props.token);
   };
   inputChangedHandler = (event, inputIdentifier) => {
     const updateOrderForm = {
@@ -200,7 +193,7 @@ class ContactData extends React.Component {
         </Button>
       </form>
     );
-    if (this.state.loading) {
+    if (this.props.loading) {
       form = <Spinner />;
     }
     return (
@@ -213,11 +206,23 @@ class ContactData extends React.Component {
 }
 
 const mapStateToProps = (state) => {
-  console.log(state);
-
   return {
-    ings: state.ingredians,
-    totSum: state.totalPrice,
+    ings: state.bld.ingredians,
+    totSum: state.bld.totalPrice,
+    loading: state.ord.loading,
+    token: state.auth.token,
+    userId: state.auth.userId,
   };
 };
-export default connect(mapStateToProps)(ContactData);
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onOrderBurger: (orderData, token) => {
+      dispatch(action.purchasBurger(orderData, token));
+    },
+  };
+};
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withErrorHandling(ContactData, axios));

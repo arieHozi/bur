@@ -9,9 +9,7 @@ class Model extends React.Component {
       nextProps.children !== this.props.children
     );
   }
-  componentWillUpdate() {
-    console.log("model has updated");
-  }
+
   render() {
     return (
       <>
