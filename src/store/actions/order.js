@@ -55,12 +55,8 @@ export const fetchOrders = (token, userId) => {
     dispatch(fetchOrderStart());
     const quearyParmams =
       "?auth=" + token + '&orderBy="userId"&equalTo="' + userId + '"';
-    console.log("fetchOrders", quearyParmams);
     axios
-      .get(
-        "https://react-my-burger-12fe5.firebaseio.com//orders.json" +
-          quearyParmams
-      )
+      .get("/orders.json" + quearyParmams)
       .then((response) => {
         const fatchOrders = [];
         for (let key in response.data) {

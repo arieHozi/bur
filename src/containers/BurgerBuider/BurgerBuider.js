@@ -29,8 +29,6 @@ class BurgerBuider extends React.Component {
   };
 
   showOrderHandel = () => {
-    console.log("[showOrderHandel]", this.props);
-
     if (this.props.isAuth) {
       this.setState({
         purchasing: true,

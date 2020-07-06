@@ -6,6 +6,7 @@ import Spinner from "../../components/UI/Spinner/Spinner";
 import classes from "./Auth.module.css";
 import { connect } from "react-redux";
 import * as actions from "../../store/actions/index";
+import { updateObject, checkValidity } from "../../shared/utility";
 
 class Auth extends React.Component {
   state = {
@@ -45,51 +46,27 @@ class Auth extends React.Component {
   };
 
   componentDidMount() {
-    console.log("[Auth]", this.props.authRedirect);
-
     if (!this.props.building && this.props.authRedirect !== "/") {
       this.props.onReirectChange();
     }
   }
 
   inputChangedHandler = (event, controlName) => {
-    const updateControls = {
-      ...this.state.controls,
-      [controlName]: {
-        ...this.state.controls[controlName],
+    const updateControls = updateObject(this.state.controls, {
+      [controlName]: updateObject(this.state.controls[controlName], {
         value: event.target.value,
-        valid: this.chackValidity(
+        valid: checkValidity(
           event.target.value,
           this.state.controls[controlName].validation
         ),
         touched: true,
-      },
-    };
+      }),
+    });
     this.setState({
       controls: updateControls,
     });
   };
-  chackValidity(value, rules) {
-    let isValid = true;
-    if (!rules) {
-      return true;
-    }
-    if (rules.required) {
-      isValid = value.trim() !== "" && isValid;
-    }
-    if (rules.minLength) {
-      isValid = value.length >= rules.minLength && isValid;
-    }
-    if (rules.maxLength) {
-      isValid = value.length <= rules.maxLength && isValid;
-    }
-    if (rules.isEmail) {
-      const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-      isValid = pattern.test(value) && isValid;
-    }
 
-    return isValid;
-  }
   submitHandler = (event) => {
     event.preventDefault();
     this.props.onAuth(
@@ -137,7 +114,7 @@ class Auth extends React.Component {
     }
     let authRedirect = "";
     if (this.props.isAuth) {
-      authRedirect = <Redirect to="/" />;
+      authRedirect = <Redirect to={this.props.authRedirect} />;
     }
     return (
       <div className={classes.Auth}>
@@ -166,8 +143,6 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 const mapStateToProps = (state) => {
-  console.log("state", state);
-
   return {
     isLoading: state.auth.loading,
     error: state.auth.error,

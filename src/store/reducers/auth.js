@@ -1,5 +1,5 @@
 import * as actionTypes from "../actions/actionTypes";
-import { updateObject } from "../utility";
+import { updateObject } from "../../shared/utility";
 
 const initState = {
   token: null,
@@ -37,8 +37,6 @@ const authLogout = (state, action) => {
 };
 
 const setAuthRedirectPath = (state, action) => {
-  console.log("setAuthRedirectPath", action);
-
   return updateObject(state, {
     authRedirect: action.path,
   });

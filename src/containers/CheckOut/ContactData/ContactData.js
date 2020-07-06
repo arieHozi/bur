@@ -7,6 +7,7 @@ import Spinner from "../../../components/UI/Spinner/Spinner";
 import Input from "../../../components/UI/Input/Input";
 import withErrorHandling from "../../../hoc/withErrorHandling";
 import * as action from "../../../store/actions/index";
+import { updateObject, checkValidity } from "../../../shared/utility";
 
 class ContactData extends React.Component {
   state = {
@@ -52,6 +53,7 @@ class ContactData extends React.Component {
           required: true,
           minLength: 5,
           maxLength: 5,
+          isNumeric: true,
         },
         valid: false,
         shouldValidate: true,
@@ -81,6 +83,7 @@ class ContactData extends React.Component {
         value: "",
         validation: {
           required: true,
+          isEmail: true,
         },
         valid: false,
         shouldValidate: true,
@@ -123,21 +126,21 @@ class ContactData extends React.Component {
     this.props.onOrderBurger(order, this.props.token);
   };
   inputChangedHandler = (event, inputIdentifier) => {
-    const updateOrderForm = {
-      ...this.state.orderForm,
-    };
-
-    const updatedFormElement = {
-      ...updateOrderForm[inputIdentifier],
-    };
-
-    updatedFormElement.value = event.target.value;
-    updatedFormElement.valid = this.chackValidity(
-      updatedFormElement.value,
-      updatedFormElement.validation
+    const updatedFormElement = updateObject(
+      this.state.orderForm[inputIdentifier],
+      {
+        value: event.target.value,
+        valid: checkValidity(
+          event.target.value,
+          this.state.orderForm[inputIdentifier].validation
+        ),
+        touched: true,
+      }
     );
-    updatedFormElement.touched = true;
-    updateOrderForm[inputIdentifier] = updatedFormElement;
+    const updateOrderForm = updateObject(this.state.orderForm, {
+      [inputIdentifier]: updatedFormElement,
+    });
+
     let isformIsValid = true;
     for (let inputIdentifier in updateOrderForm) {
       isformIsValid = updateOrderForm[inputIdentifier].valid && isformIsValid;
@@ -147,22 +150,6 @@ class ContactData extends React.Component {
       formIsValid: isformIsValid,
     });
   };
-
-  chackValidity(value, rules) {
-    let isValid = true;
-
-    if (rules.required) {
-      isValid = value.trim() !== "" && isValid;
-    }
-    if (rules.minLength) {
-      isValid = value.length >= rules.minLength && isValid;
-    }
-    if (rules.maxLength) {
-      isValid = value.length <= rules.maxLength && isValid;
-    }
-
-    return isValid;
-  }
 
   render() {
     let orderFormArray = [];
